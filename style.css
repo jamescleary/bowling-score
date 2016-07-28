@@ -1,0 +1,18 @@
+.frame-score {
+	display: flex;
+}
+
+.frame {
+	display: flex;
+	flex-wrap: wrap;
+	max-width: 50px;
+	border: 1px solid black;
+}
+
+.frame-segment {
+	flex: 1 1 50%;
+}
+
+.frame-score {
+	flex: 2 2 100%;
+}
