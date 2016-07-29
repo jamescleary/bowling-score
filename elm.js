@@ -7746,7 +7746,7 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
-var _user$project$Main$currentFrame = function (frame) {
+var _user$project$Main$currentFrameView = function (frame) {
 	var _p0 = frame;
 	switch (_p0.ctor) {
 		case 'Half':
@@ -7791,7 +7791,7 @@ var _user$project$Main$currentFrame = function (frame) {
 				]);
 	}
 };
-var _user$project$Main$render_frame = function (_p1) {
+var _user$project$Main$frameView = function (_p1) {
 	var _p2 = _p1;
 	var breakdown = function () {
 		var _p3 = _p2._0;
@@ -7899,7 +7899,7 @@ var _user$project$Main$isFinalFrameDone = function (rolls) {
 };
 var _user$project$Main$Model = F7(
 	function (a, b, c, d, e, f, g) {
-		return {frames: a, frame_score: b, game_score: c, game_state: d, error: e, currentRoll: f, currentFrame: g};
+		return {frames: a, frame_score: b, game_score: c, game_state: d, error: e, current_roll: f, current_frame: g};
 	});
 var _user$project$Main$Finished = {ctor: 'Finished'};
 var _user$project$Main$InProgress = {ctor: 'InProgress'};
@@ -7996,24 +7996,24 @@ var _user$project$Main$updateFrame = F2(
 var _user$project$Main$resetModel = function (model) {
 	return _elm_lang$core$Native_Utils.update(
 		model,
-		{currentFrame: _user$project$Main$New, currentRoll: '', error: ''});
+		{current_frame: _user$project$Main$New, current_roll: '', error: ''});
 };
 var _user$project$Main$updateFrames = F2(
 	function (rollScore, model) {
-		var newFrame = A2(_user$project$Main$updateFrame, rollScore, model.currentFrame);
+		var newFrame = A2(_user$project$Main$updateFrame, rollScore, model.current_frame);
 		var _p12 = newFrame;
 		if (_p12.ctor === 'Err') {
 			return _elm_lang$core$Native_Utils.update(
 				model,
-				{error: _p12._0, currentRoll: ''});
+				{error: _p12._0, current_roll: ''});
 		} else {
 			switch (_p12._0.ctor) {
 				case 'Half':
 					return _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							currentFrame: _user$project$Main$Half(_p12._0._0),
-							currentRoll: '',
+							current_frame: _user$project$Main$Half(_p12._0._0),
+							current_roll: '',
 							error: ''
 						});
 				case 'FinalFrame':
@@ -8033,8 +8033,8 @@ var _user$project$Main$updateFrames = F2(
 							})) : _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							currentFrame: _user$project$Main$FinalFrame(_p13),
-							currentRoll: '',
+							current_frame: _user$project$Main$FinalFrame(_p13),
+							current_roll: '',
 							error: ''
 						});
 				default:
@@ -8052,12 +8052,12 @@ var _user$project$Main$updateFrames = F2(
 		}
 	});
 var _user$project$Main$detectFinalFrame = function (model) {
-	return (_elm_lang$core$Native_Utils.eq(model.currentFrame, _user$project$Main$New) && (_elm_lang$core$Native_Utils.cmp(
+	return (_elm_lang$core$Native_Utils.eq(model.current_frame, _user$project$Main$New) && (_elm_lang$core$Native_Utils.cmp(
 		_elm_lang$core$List$length(model.frames),
 		9) > -1)) ? _elm_lang$core$Native_Utils.update(
 		model,
 		{
-			currentFrame: _user$project$Main$FinalFrame(
+			current_frame: _user$project$Main$FinalFrame(
 				_elm_lang$core$Native_List.fromArray(
 					[]))
 		}) : model;
@@ -8217,7 +8217,7 @@ var _user$project$Main$updateScores = function (model) {
 			_elm_lang$core$Basics_ops['++'],
 			model.frames,
 			_elm_lang$core$Native_List.fromArray(
-				[model.currentFrame])));
+				[model.current_frame])));
 	return _elm_lang$core$Native_Utils.update(
 		model,
 		{
@@ -8231,13 +8231,13 @@ var _user$project$Main$update = F2(
 		if (_p22.ctor === 'TypeIn') {
 			return _elm_lang$core$Native_Utils.update(
 				model,
-				{currentRoll: _p22._0});
+				{current_roll: _p22._0});
 		} else {
-			var _p23 = _elm_lang$core$String$toInt(model.currentRoll);
+			var _p23 = _elm_lang$core$String$toInt(model.current_roll);
 			if (_p23.ctor === 'Err') {
 				return _elm_lang$core$Native_Utils.update(
 					model,
-					{error: 'Invalid input', currentRoll: ''});
+					{error: 'Invalid input', current_roll: ''});
 			} else {
 				return _user$project$Main$updateScores(
 					_user$project$Main$detectFinalFrame(
@@ -8249,7 +8249,7 @@ var _user$project$Main$TypeIn = function (a) {
 	return {ctor: 'TypeIn', _0: a};
 };
 var _user$project$Main$Roll = {ctor: 'Roll'};
-var _user$project$Main$viewForm = function (model) {
+var _user$project$Main$formView = function (model) {
 	var _p24 = model.game_state;
 	if (_p24.ctor === 'InProgress') {
 		return _elm_lang$core$Native_List.fromArray(
@@ -8270,7 +8270,7 @@ var _user$project$Main$viewForm = function (model) {
 					[
 						_elm_lang$html$Html_Attributes$type$('text'),
 						_elm_lang$html$Html_Attributes$placeholder('How many pins?'),
-						_elm_lang$html$Html_Attributes$value(model.currentRoll),
+						_elm_lang$html$Html_Attributes$value(model.current_roll),
 						_elm_lang$html$Html_Events$onInput(_user$project$Main$TypeIn)
 					]),
 				_elm_lang$core$Native_List.fromArray(
@@ -8330,7 +8330,7 @@ var _user$project$Main$view = function (model) {
 						]),
 					A2(
 						_elm_lang$core$List$map,
-						_user$project$Main$render_frame,
+						_user$project$Main$frameView,
 						A3(
 							_elm_lang$core$List$map2,
 							F2(
@@ -8358,7 +8358,7 @@ var _user$project$Main$view = function (model) {
 									_elm_lang$html$Html$text('Current Frame')
 								]))
 						]),
-					_user$project$Main$currentFrame(model.currentFrame))),
+					_user$project$Main$currentFrameView(model.current_frame))),
 				A2(
 				_elm_lang$html$Html$div,
 				_elm_lang$core$Native_List.fromArray(
@@ -8379,7 +8379,7 @@ var _user$project$Main$view = function (model) {
 					[
 						_elm_lang$html$Html_Attributes$class('add-roll')
 					]),
-				_user$project$Main$viewForm(model))
+				_user$project$Main$formView(model))
 			]));
 };
 var _user$project$Main$main = {
