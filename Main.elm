@@ -22,8 +22,8 @@ type alias Model =
     , game_score: Int
     , game_state: GameState
     , error: String
-    , currentRoll: String
-    , currentFrame: Frame
+    , current_roll: String
+    , current_frame: Frame
     }
 
 init : Model
@@ -53,11 +53,11 @@ type Msg = Roll | TypeIn String
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        TypeIn str -> { model | currentRoll = str }
+        TypeIn str -> { model | current_roll = str }
         Roll -> 
-            case toInt model.currentRoll of
+            case toInt model.current_roll of
                 Err err -> 
-                    { model | error = "Invalid input", currentRoll = "" }
+                    { model | error = "Invalid input", current_roll = "" }
                 Ok rollScore ->
                     updateFrames rollScore model |> detectFinalFrame |> updateScores
 
@@ -67,14 +67,14 @@ Update our list of frames and current frame when the form is submitted
 updateFrames : Int -> Model -> Model
 updateFrames rollScore model =
     let 
-        newFrame = updateFrame rollScore model.currentFrame
+        newFrame = updateFrame rollScore model.current_frame
     in
         case newFrame of
-            Err txt -> { model | error = txt, currentRoll = "" }
+            Err txt -> { model | error = txt, current_roll = "" }
             Ok (Half fst) ->
                 { model |
-                    currentFrame = Half fst,
-                    currentRoll = "",
+                    current_frame = Half fst,
+                    current_roll = "",
                     error = "" }
             Ok (FinalFrame rolls) ->
                 if isFinalFrameDone rolls then
@@ -83,8 +83,8 @@ updateFrames rollScore model =
                         game_state = Finished }
                 else
                     { model |
-                        currentFrame = FinalFrame rolls,
-                        currentRoll = "",
+                        current_frame = FinalFrame rolls,
+                        current_roll = "",
                         error = "" }
             Ok frame ->
                 resetModel { model | frames = model.frames ++ [ frame ] }
@@ -115,8 +115,8 @@ updateFrame roll frame =
 resetModel : Model -> Model
 resetModel model =
     { model |
-        currentFrame = New,
-        currentRoll = "",
+        current_frame = New,
+        current_roll = "",
         error = "" }
 
 isFinalFrameDone : List Int -> Bool
@@ -153,8 +153,8 @@ handleFinalFrame roll rolls =
 -- Make sure if we're in the 10th frame, we're operating on a FinalFrame type
 detectFinalFrame : Model -> Model
 detectFinalFrame model =
-    if (model.currentFrame == New) && (List.length model.frames >= 9) then
-        { model | currentFrame = FinalFrame [] }
+    if (model.current_frame == New) && (List.length model.frames >= 9) then
+        { model | current_frame = FinalFrame [] }
     else
         model
 
@@ -162,7 +162,7 @@ detectFinalFrame model =
 updateScores : Model -> Model
 updateScores model =
     let 
-        newFrameScores = scoreFrames (model.frames ++ [ model.currentFrame ])
+        newFrameScores = scoreFrames (model.frames ++ [ model.current_frame ])
     in
         { model |
             frame_score = newFrameScores,
@@ -245,15 +245,15 @@ view model =
     div []
         [ div [ class "frame-score" ] 
             <| [ h4 [] [ text "Score Card" ] ] ++
-            ( List.map render_frame (List.map2 (,) model.frames model.frame_score) )
+            ( List.map frameView (List.map2 (,) model.frames model.frame_score) )
         , div [ class "current-frame" ] 
-            <| [ h4 [] [text "Current Frame" ] ] ++ (currentFrame model.currentFrame)
+            <| [ h4 [] [text "Current Frame" ] ] ++ (currentFrameView model.current_frame)
         , div [class "game-score"] [ text <| "Total Score: " ++ (toString model.game_score) ]
-        , div [ class "add-roll" ] ( viewForm model )
+        , div [ class "add-roll" ] ( formView model )
         ]
 
-render_frame : (Frame, FrameScore) -> Html Msg
-render_frame (frame, score) =
+frameView : (Frame, FrameScore) -> Html Msg
+frameView (frame, score) =
     let 
         total = 
             case score of
@@ -274,19 +274,19 @@ render_frame (frame, score) =
             <| (List.map (\score -> div [class "frame-segment"] [ text score ]) breakdown) ++ 
             [ div [class "frame-score" ] [ text total ] ]
 
-currentFrame frame =
+currentFrameView frame =
     case frame of
         Half x -> [ div [] [ text <| toString x ] ]
         FinalFrame scores -> List.map (\x -> div [] [ text (toString x) ]) scores
         _ -> [ div [] [ text "0" ] ]
 
 -- show the input field or Game Over if we've finished
-viewForm : Model -> List (Html Msg)
-viewForm model =
+formView : Model -> List (Html Msg)
+formView model =
     case model.game_state of
         InProgress ->
             [ p [ class "error" ] [ text model.error ]
-            , input [ type' "text", placeholder "How many pins?", value model.currentRoll, onInput TypeIn ] []
+            , input [ type' "text", placeholder "How many pins?", value model.current_roll, onInput TypeIn ] []
             , button [onClick Roll] [text "Go!" ] ]
         Finished ->
             [ p [ class "game-over" ] [ text "Game Over!" ] ]
